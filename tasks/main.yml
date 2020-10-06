@@ -1,0 +1,7 @@
+---
+# tasks file for ansible-ipsec
+
+- name: Install libreswan
+  package:
+    name: libreswan
+    state: present
