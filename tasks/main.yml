@@ -1,7 +1,32 @@
 ---
 # tasks file for ansible-ipsec
 
-- name: Install libreswan
+- name: IPSec | Install libreswan
   package:
     name: libreswan
     state: present
+
+- name: IPSec | Enable IPSec service
+  systemd:
+    name: ipsec
+    state: started
+    enabled: true
+    masked: false
+
+- name: IPSec | Install firewalld
+  package:
+    name: firewalld
+    state: present
+
+- name: IPSec | Enable firewalld service
+  systemd:
+    name: firewalld
+    state: started
+    enabled: true
+    masked: false
+
+- name: IPSec | Open ipsec firewalld ports
+  firewalld:
+    service: ipsec
+    state: enabled
+    permanent: true
