@@ -30,3 +30,46 @@
     service: ipsec
     state: enabled
     permanent: true
+
+- name: Generate PKCS#12 file locally
+  delegate_to: localhost
+  community.crypto.openssl_pkcs12:
+    action: export
+    path: /opt/certs/ansible.p12
+    friendly_name: raclette
+    privatekey_path: /opt/certs/keys/key.pem
+    certificate_path: /opt/certs/cert.pem
+    other_certificates: /opt/certs/ca.pem
+    state: present
+
+- name: Copy the PKCS#12 file to each host
+  copy:
+    src: /opt/certs/ansible.p12
+    dest: /opt/certs/ansible.p12
+
+- name: Import PKCS#12 file
+  shell: ipsec import /opt/certs/ansible.p12
+
+- name: Copy connection definitions for IPSec
+  template:
+    src: mesh.conf.j2
+    dest: /etc/ipsec.d/mesh.conf
+
+  # TODO: Placeholder
+- name: Configure Private Network
+  shell: echo "10.15.0.0/16" >> /etc/ipsec.d/policies/private
+
+  # TODO: Placeholder
+- name: Configure Private-Or-Clear Network
+  shell: echo "10.15.34.0/24" >> /etc/ipsec.d/policies/private-or-clea
+
+  # TODO: Placeholder
+- name: Configure Clear Network
+  shell: echo "10.15.1.2/32" >> /etc/ipsec.d/policies/clear
+
+- name: Restart IPSec service
+  systemd:
+    name: ipsec
+    state: restarted
+    masked: false
+    enabled: true

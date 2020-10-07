@@ -1,0 +1,38 @@
+conn clear
+	auto=ondemand
+	type=passthrough
+	authby=never
+	left=%defaultroute
+	right=%group
+
+conn private
+	auto=ondemand
+	type=transport
+	authby=rsasig
+	failureshunt=drop
+	negotiationshunt=drop
+	# left
+	left=%defaultroute
+	leftcert=nodeXXXX
+	leftid=%fromcert
+        leftrsasigkey=%cert
+	# right
+	rightrsasigkey=%cert
+	rightid=%fromcert
+	right=%opportunisticgroup
+
+conn private-or-clear
+	auto=ondemand
+	type=transport
+	authby=rsasig
+	failureshunt=passthrough
+	negotiationshunt=passthrough
+	# left
+	left=%defaultroute
+	leftcert=nodeXXXX
+	leftid=%fromcert
+        leftrsasigkey=%cert
+	# right
+	rightrsasigkey=%cert
+	rightid=%fromcert
+	right=%opportunisticgroup
